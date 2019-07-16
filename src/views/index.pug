@@ -1,0 +1,19 @@
+extends layouts/_common-base
+
+//- Template variables
+block vars
+    - var $storeName = 'Perfumaria'
+    - var $templateName = 'Category'
+
+//- Page styles
+block append styles
+    link(rel='stylesheet', href=`css/${$storeName}-${$templateName}.css`, media='all')/
+
+//- Main Content 
+block content
+    include modules/_line
+    include modules/_shelf
+    
+//- Page scripts
+block append scripts
+    script(type='text/javascript', src=`js/${$storeName}-${$templateName}.js`)

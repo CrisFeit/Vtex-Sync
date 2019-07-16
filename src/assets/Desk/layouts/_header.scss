@@ -1,0 +1,140 @@
+.header {
+  width: 100vw;
+  height: 102px;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(to top, $color-grey-light, #fff);
+  border-bottom: 1px solid $color-grey-medium;
+  
+  &__wrap {
+    width: 65%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    font-size: 1.25em;
+    font-weight: bold;
+    color: $color-grey-dark;
+    min-width: fit-content;
+    border-right: 1px solid $color-grey;
+    padding-right: 3%;
+    @include mq("sm", "max") {
+      text-align: center;
+      flex-shrink: 0;
+      border: none;
+      padding-right: 0;
+      width: 30%;
+    }
+  }
+
+  &__nav {
+    flex: 5 4;
+
+    @include mq("sm", "max") {
+      transition: opacity 0.4s 0.4s, width 0.3s;
+      opacity: 0;
+      position: fixed;
+      width: 0;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 4;
+      will-change: opacity;
+      will-change: width;
+      overflow: hidden !important;
+    }
+    
+    &.change {
+      opacity: 1;
+      width: 100vw;
+    }
+  }
+
+  &__menu {
+    display: flex;
+    justify-content: flex-start;
+
+    @include mq("sm", "max") {
+      position: fixed;
+      text-align: center;
+      transform: translateX(-100%);
+      transition: transform 0.7s 0.2s;
+      top: 0;
+      height: 100%;
+      width: 35vw;
+      padding: 20px;
+      flex-direction: column;
+      align-items: center;
+      background: #fff;
+      z-index: 5;
+      will-change: transform;
+      box-shadow: 0 0 40px 7px #fff;
+      overflow: hidden;
+    }
+
+    &.change {
+      transform: translateX(0);
+    }
+
+    &-item {
+      margin: auto 3.5%;
+      cursor: pointer;
+
+      @include mq("sm", "max") {
+        &:first-child {
+          margin-top: 90px;
+        }
+
+        margin: 10px auto;
+      }
+
+      &:hover {
+        border-bottom: 3px solid $color-grey-dark;
+      }
+    }
+  }
+
+  &__cart {
+    position: relative;
+    min-height: 40px;
+    @include mq("sm", "max") {
+      width: 30%;
+      }
+    &-wrap{
+      max-width: fit-content;
+      border: 2px solid $color-grey-dark;
+      border-radius: 20px;
+      padding: 4px 7px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      white-space: nowrap;
+      @include mq("sm", "max") {
+        margin-left: 25%;
+        }
+    }
+
+    &-img {
+      display: inline-block;
+      max-width: 30px;
+      margin-right: 5px;
+      flex: 1 0 30%;
+
+      // @include mq("sm", "max") {
+      // }
+    }
+
+    &-value {
+      font-size: 0.9em;
+      flex: 3 2 60%;
+    }
+  }
+}
