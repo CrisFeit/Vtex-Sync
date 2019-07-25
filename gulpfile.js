@@ -7,7 +7,7 @@ const storeName = 'Perfumaria';
 const paths = {
         vtex :  'dist/arquivos/',
         styles: {
-            src   : 'src/assets/sass/**/*.scss',
+            src   : './src/assets/sass/**/*.scss',
             dest  : './dist/css'
         },
         scripts: {
@@ -15,7 +15,7 @@ const paths = {
             dest  : './dist/js'
         },
   };
-
+  var folders = ['src/assets/Mobile', 'src/assets/Desk'];
 // ------------------------------------- Modules -------------------------------------------
 
 let merge           = require('merge-stream');
@@ -33,25 +33,34 @@ const stream        = require('event-stream');
 const del           = require('del');
 const browserSync   = require("browser-sync").create();
 
-var folders = ['src/assets/Mobile', 'src/assets/Desk'];
+
 
 function scss(){
-
     let tasks = folders.map(function(element){
         return gulp.src(element + '/**/*.scss')
             .pipe(sass())
             .pipe(gulp.dest(paths.vtex))
             .pipe(browserSync.stream())
     });
-
     return merge(tasks);
 };
-// function scss() {
-//     return gulp.src(paths.styles.src)
-//         .pipe(sass())
-//         .pipe(gulp.dest(paths.vtex))
-//         .pipe(browserSync.stream());
-// };
+
+function es(done) {
+    return glob(`./src/assets/{Desk,Mobile}/js/${storeName}-**.js`, function(err,folder) {
+        if(err) done(err);
+        let files = folder.map((file) => file.split('js/')[1])
+        let tasks = files.map(function(entry) {
+          return browserify({ entries: [folder] })
+                .transform(babelify, { presets: ["@babel/preset-env"] })
+                .bundle()
+                .pipe(source(entry))
+                .pipe(buffer())
+                .pipe(gulp.dest(paths.vtex));
+        });
+        stream.merge(tasks).on('end', done);
+    })
+};
+
 // ------------------------------------ Development ---------------------------------------
 
 function sync(){
@@ -68,21 +77,21 @@ function sync(){
     })
 }
 
-function es(done) {
-    return glob(`${paths.scripts.src}${storeName}-**.js`, function(err,folder) {
-        if(err) done(err);
-        let files = folder.map((file) => file.split('js/')[1])
-        let tasks = files.map(function(entry) {
-          return browserify({ entries: [ paths.scripts.src + entry] })
-                .transform(babelify, { presets: ["@babel/preset-env"] })
-                .bundle()
-                .pipe(source(entry))
-                .pipe(buffer())
-                .pipe(gulp.dest(paths.vtex));
-        });
-        stream.merge(tasks).on('end', done);
-    })
-};
+// function es(done) {
+//     return glob(`${paths.scripts.src}${storeName}-**.js`, function(err,folder) {
+//         if(err) done(err);
+//         let files = folder.map((file) => file.split('js/')[1])
+//         let tasks = files.map(function(entry) {
+//           return browserify({ entries: [ paths.scripts.src + entry] })
+//                 .transform(babelify, { presets: ["@babel/preset-env"] })
+//                 .bundle()
+//                 .pipe(source(entry))
+//                 .pipe(buffer())
+//                 .pipe(gulp.dest(paths.vtex));
+//         });
+//         stream.merge(tasks).on('end', done);
+//     })
+// };
 
 // function scss() {
 //     return gulp.src(paths.styles.src)

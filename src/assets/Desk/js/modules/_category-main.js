@@ -3,7 +3,7 @@ const Methods = {
   init() {
     Methods.getProducts();
   },
-  //Cache do Dom  
+  //Cache do Dom  //Desk
   components: {
     mainShelf: document.querySelector('.js--shelf'),
     cart: document.querySelector('.js--cart'),
