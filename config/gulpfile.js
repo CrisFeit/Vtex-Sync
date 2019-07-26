@@ -2,10 +2,10 @@
 
 // ---------------------------------- Configuration ---------------------------------------
 
-const storeName = 'Perfumaria';
-
+const storeName  =  'Perfumaria';
+const folders    =  '{Common,Desk,Mobile}';
+const vtex       =  './dist/arquivos/';
 const paths = {
-        vtex :  'dist/arquivos/',
         styles: {
             src   : './src/assets/sass/**/*.scss',
             dest  : './dist/css'
@@ -15,7 +15,6 @@ const paths = {
             dest  : './dist/js'
         },
   };
-  var folders = ['src/assets/Mobile', 'src/assets/Desk'];
 // ------------------------------------- Modules -------------------------------------------
 
 let merge           = require('merge-stream');
@@ -33,20 +32,18 @@ const stream        = require('event-stream');
 const del           = require('del');
 const browserSync   = require("browser-sync").create();
 
-
-
 function scss(){
-    let tasks = folders.map(function(element){
-        return gulp.src(element + '/**/*.scss')
+    return glob(`./src/${folders}/sass/**/*.scss`, function(err,element){
+        if(err) done(err);
+        return gulp.src(element)
             .pipe(sass())
-            .pipe(gulp.dest(paths.vtex))
+            .pipe(gulp.dest(vtex))
             .pipe(browserSync.stream())
     });
-    return merge(tasks);
 };
 
 function es(done) {
-    return glob(`./src/assets/{Desk,Mobile}/js/${storeName}-**.js`, function(err,folder) {
+    return glob(`./src/${folders}/js/**.js`, function(err,folder) {
         if(err) done(err);
         let files = folder.map((file) => file.split('js/')[1])
         let tasks = files.map(function(entry) {
@@ -55,7 +52,7 @@ function es(done) {
                 .bundle()
                 .pipe(source(entry))
                 .pipe(buffer())
-                .pipe(gulp.dest(paths.vtex));
+                .pipe(gulp.dest(vtex ));
         });
         stream.merge(tasks).on('end', done);
     })
@@ -72,7 +69,7 @@ function sync(){
         proxy: 'https://' + storeName  + '.vtexcommercestable.com.br',
         serveStatic: [{
             route: '/arquivos',
-            dir: [paths.vtex]
+            dir: [vtex]
         }]
     })
 }
@@ -87,7 +84,7 @@ function sync(){
 //                 .bundle()
 //                 .pipe(source(entry))
 //                 .pipe(buffer())
-//                 .pipe(gulp.dest(paths.vtex));
+//                 .pipe(gulp.dest(vtex ));
 //         });
 //         stream.merge(tasks).on('end', done);
 //     })
@@ -96,13 +93,13 @@ function sync(){
 // function scss() {
 //     return gulp.src(paths.styles.src)
 //         .pipe(sass())
-//         .pipe(gulp.dest(paths.vtex))
+//         .pipe(gulp.dest(vtex ))
 //         .pipe(browserSync.stream());
 // };
 
 function watch() {
-    gulp.watch(paths.styles.src, css);
-    gulp.watch(paths.scripts.src, js).on('change', browserSync.reload);
+    gulp.watch(['src/assets/Mobile/sass/**/*.scss', 'src/assets/Desk/sass/**/*.scss'], css);
+    gulp.watch(['src/assets/Mobile/js/**/*.js', 'src/assets/Desk/js/**/*.js'], js).on('change', browserSync.reload);
 }
 // ------------------------------------- Production ---------------------------------------
 
