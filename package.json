@@ -1,16 +1,16 @@
 {
-    "name": "Perfumaria",
+    "name": "Vtex-Sync",
     "version": "1.0.0",
-    "description": "Gulp Setup",
+    "description": "Gulp Workflow",
     "main": "index.js",
     "scripts": {
         "dev": "gulp watch --color",
         "prod": "gulp --color --production",
-        "deploy": "gh-pages -d dist"
+        "sprite": "gulp sprite --color"
     },
-    "author": "Cristiano",
+    "author": "Cristiano Rocha",
     "license": "MIT",
-    "homepage": "https://cristrocha.github.io/Perfumaria/",
+    "homepage": "https://github.com/CrisFeit/Vtex-Sync",
     "devDependencies": {
         "@babel/core": "^7.4.5",
         "@babel/preset-env": "^7.4.5",
@@ -19,22 +19,18 @@
         "browserify": "^16.2.3",
         "del": "^4.1.1",
         "event-stream": "^4.0.1",
-        "gh-pages": "^2.0.1",
         "glob": "^7.1.4",
         "gulp": "^4.0.2",
         "gulp-autoprefixer": "^5.0.0",
         "gulp-babel": "^8.0.0",
-        "gulp-concat": "^2.6.1",
-        "gulp-imagemin": "^4.1.0",
-        "gulp-minify": "^3.1.0",
         "gulp-sass": "^4.0.1",
         "gulp-uglify": "^3.0.0",
+        "gulp.spritesmith": "^6.10.1",
         "gulplog": "^1.0.0",
-        "merge-stream": "^2.0.0",
         "spritesmith": "^3.3.1",
         "svgo": "^1.3.0",
         "vinyl-buffer": "^1.0.1",
-        "vinyl-source-stream": "^2.0.0",
-        "watchify": "^3.11.1"
-    }
+        "vinyl-source-stream": "^2.0.0"
+    },
+    "dependencies": {}
 }

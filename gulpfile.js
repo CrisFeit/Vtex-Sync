@@ -3,26 +3,18 @@
 // ---------------------------------- Configuration ---------------------------------------
 
 const storeName  =  'Perfumaria';
-const folders    =  '{Common,Desk,Mobile}';
-const vtex       =  './dist/arquivos/';
-const paths = {
-        styles: {
-            src   : './src/assets/sass/**/*.scss',
-            dest  : './dist/css'
-        },
-        scripts: {
-            src   : './src/assets/js/',
-            dest  : './dist/js'
-        },
-  };
+const vtex       =  './app/dist/arquivos';
+const folders    =  '{common,desktop,mobile}';
+const scripts    =  `./app/src/${folders}/js/**.js`;
+const styles     =  `./app/src/${folders}/sass/**/*.scss`;
+const sprites     =  './app/assets/images/*.png';
+
 // ------------------------------------- Modules -------------------------------------------
 
-let merge           = require('merge-stream');
 const gulp          = require('gulp');
 const sass          = require('gulp-sass');
 const prefixer      = require('gulp-autoprefixer');
 const uglify        = require('gulp-uglify');
-const imagemin      = require('gulp-imagemin');
 const browserify    = require('browserify');
 const babelify      = require('babelify');
 const source        = require('vinyl-source-stream');
@@ -31,9 +23,35 @@ const glob          = require('glob');
 const stream        = require('event-stream');
 const del           = require('del');
 const browserSync   = require("browser-sync").create();
+const spritesmith   = require('gulp.spritesmith');
+
+// ------------------------------------ Development ---------------------------------------
+
+function sprite() {
+        return gulp.src(sprites)
+            .pipe(spritesmith({
+                imgName: 'sprite.png',
+                cssName: 'sprite.css'
+            }))
+            .pipe(gulp.dest('./app/dist'));
+}
+
+function sync(){
+    browserSync.init({
+        open: true,
+        https: true,
+        host: 'edbr'+'.vtexlocal.com.br',
+        startpath: '/admin/login/',
+        proxy: 'https://'+'edbr'+'.vtexcommercestable.com.br',
+        serveStatic: [{
+            route: '/arquivos',
+            dir: [vtex]
+        }]
+    })
+}
 
 function scss(){
-    return glob(`./src/${folders}/sass/**/*.scss`, function(err,element){
+    return glob(styles, function(err,element){
         if(err) done(err);
         return gulp.src(element)
             .pipe(sass())
@@ -42,8 +60,8 @@ function scss(){
     });
 };
 
-function es(done) {
-    return glob(`./src/${folders}/js/**.js`, function(err,folder) {
+function babel(done) {
+    return glob(scripts, function(err,folder) {
         if(err) done(err);
         let files = folder.map((file) => file.split('js/')[1])
         let tasks = files.map(function(entry) {
@@ -52,102 +70,67 @@ function es(done) {
                 .bundle()
                 .pipe(source(entry))
                 .pipe(buffer())
-                .pipe(gulp.dest(vtex ));
+                .pipe(gulp.dest(vtex));
         });
         stream.merge(tasks).on('end', done);
     })
 };
 
-// ------------------------------------ Development ---------------------------------------
-
-function sync(){
-    browserSync.init({
-        open: true,
-        https: true,
-        host: storeName  + '.vtexlocal.com.br',
-        startpath: '/admin/login/',
-        proxy: 'https://' + storeName  + '.vtexcommercestable.com.br',
-        serveStatic: [{
-            route: '/arquivos',
-            dir: [vtex]
-        }]
-    })
-}
-
-// function es(done) {
-//     return glob(`${paths.scripts.src}${storeName}-**.js`, function(err,folder) {
-//         if(err) done(err);
-//         let files = folder.map((file) => file.split('js/')[1])
-//         let tasks = files.map(function(entry) {
-//           return browserify({ entries: [ paths.scripts.src + entry] })
-//                 .transform(babelify, { presets: ["@babel/preset-env"] })
-//                 .bundle()
-//                 .pipe(source(entry))
-//                 .pipe(buffer())
-//                 .pipe(gulp.dest(vtex ));
-//         });
-//         stream.merge(tasks).on('end', done);
-//     })
-// };
-
-// function scss() {
-//     return gulp.src(paths.styles.src)
-//         .pipe(sass())
-//         .pipe(gulp.dest(vtex ))
-//         .pipe(browserSync.stream());
-// };
-
 function watch() {
-    gulp.watch(['src/assets/Mobile/sass/**/*.scss', 'src/assets/Desk/sass/**/*.scss'], css);
-    gulp.watch(['src/assets/Mobile/js/**/*.js', 'src/assets/Desk/js/**/*.js'], js).on('change', browserSync.reload);
+    gulp.watch(styles, css);
+    gulp.watch(scripts, js).on('change', browserSync.reload);
 }
 // ------------------------------------- Production ---------------------------------------
 
-function js(done) {
-    return glob(`${paths.scripts.src}${storeName}-**.js`, function(err,folder) {
+function css(done){
+    return glob(styles, function(err,folder){
         if(err) done(err);
-        let files = folder.map((file) => file.split('js/')[1])
-        var tasks = files.map(function(entry) {
-          return browserify({ entries: [ paths.scripts.src + entry] })
+        let builds = folder.map((file) => file.split(storeName)[0].replace('src','dist').replace('sass','css'))
+        let tasks  = folder.map(function(entry,index) {
+             return gulp.src(entry)
+                .pipe(sass({
+                    outputStyle : 'compressed'
+                }))
+                .pipe(prefixer({
+                    browsers: ['last 4 versions'],
+                    cascade: false
+                }))
+                .pipe(gulp.dest(builds[index]))
+            });
+            stream.merge(tasks).on('end', done);
+        });
+};
+
+function js(done) {
+    return glob(scripts , function(err,folder) {
+        if(err) done(err);
+        let files  = folder.map((file) => file.split('js/')[1])
+        let builds = folder.map((file) => file.split(storeName)[0].replace('src','dist'))
+        let tasks  = files.map(function(entry,index) {
+            return browserify({ entries: [folder] })
                 .transform(babelify, { presets: ["@babel/preset-env"] })
                 .bundle()
                 .pipe(source(entry))
                 .pipe(buffer())
                 .pipe(uglify())
-                .pipe(gulp.dest('./dist/js'));
+                .pipe(gulp.dest(builds[index]));
         });
         stream.merge(tasks).on('end', done);
     })
 };
 
-function img() {
-    return gulp.src('./src/assets/img/*.png')
-        .pipe(imagemin(
-            { optimizationLevel: 5 },
-        ))
-        .pipe(gulp.dest('./dist/img'))
-}
-
-function css() {
-    return gulp.src(paths.styles.src)
-        .pipe(sass({
-            outputStyle : 'compressed'
-        }))
-        .pipe(prefixer({
-            browsers: ['last 4 versions'],
-            cascade: false
-        }))
-        .pipe(gulp.dest(paths.styles.dest));
-}
 
 function clean() {
-    return del([ 'dist' ]);
+    return del([ 'app/dist' ]);
 }
-
 // ------------------------------------- Tasks ---------------------------------------
 
-const dev = gulp.series(clean,gulp.parallel(sync,img,scss,es,watch));
+const dev = gulp.series(clean,gulp.parallel(sync,scss,babel,watch));
 exports.watch = dev;
 
-const prod = gulp.series(clean,gulp.parallel(css,js,img));
+const prod = gulp.series(clean,gulp.parallel(css,js));
 exports.default = prod;
+
+const smith = gulp.series(clean,gulp.parallel(sprite));
+exports.sprite = smith;
+

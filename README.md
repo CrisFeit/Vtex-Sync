@@ -34,16 +34,12 @@ const storeName = 'My-Store';
 ```
 - Configure your paths 
 ```javascript
-const path = {
-        styles: {
-            src   : 'src/assets/sass/**/*.scss',
-            dest  : './dist/css'
-        },
-        scripts: {
-            src   : './src/assets/js/',
-            dest  : './dist/js'
-        },
-  };
+
+const storeName  =  'My-Store';
+const vtex       =  './app/dist/arquivos';
+const folders    =  '{common,desktop,mobile}';
+const scripts    =  `./app/src/${folders}/js/**.js`
+const styles     =  `./app/src/${folders}/sass/**/*.scss`
 ```
 ## Comand and Control
 - Development
