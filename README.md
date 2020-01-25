@@ -1,15 +1,21 @@
 # Vtex Sync 
- ### A gulp 4 workflow setup for Vtex CMS
+ ### A Front-End workflow setup for Vtex CMS
 
-![Witch Devs](https://raw.githubusercontent.com/CristRocha/Gulp-4-Browserify/master/src/assets/img/WicthDevs.png)
 ##  Features
 * Reverse Proxy - Run in proxy mode where Vtex files will be served from your local directory
-* ES6 Modules   - Add support for ES6 import / export syntax
+* Vue Single File Components
+* ES6 Modules  - Add support for ES6 import / export syntax
+* Suport for Async Await syntax
+* Smacss , ITCSS and Atomic css Architecture
 
 ##  Specifications
  
- * Browser Sync   \*requires at least version 2.8.0
- * Sass to Css Compressed & Prefixed
+ * Vue single file component 
+ * Browser Sync   \* requires at least version 2.8.0
+ * Sass
+ * Postcss
+      * autoprefixer
+      * nanocss
  * Browserify
     * Glob
     * Uglify
