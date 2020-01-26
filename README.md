@@ -5,6 +5,7 @@
 #### homepage : https://github.com/CrisFeit/Vtex-Sync
 
 ##  Features
+* Vtex Emails
 * Reverse Proxy - Run in proxy mode where Vtex files will be served from your local directory
 * Vue Single File Components
 * 3 Code Split - Shared / Desktop / Mobile
@@ -70,5 +71,7 @@ npm run vueProd
 https://github.com/vtex/speed
 
 https://github.com/Zeindelf/taskerify
+
+https://github.com/vtex/vtex-emails
 
 https://github.com/gulpjs/gulp/blob/master/docs/recipes/running-task-steps-per-folder.md
