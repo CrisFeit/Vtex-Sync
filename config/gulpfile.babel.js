@@ -1,40 +1,41 @@
-
-"use strict";
 // ---------------------------------- Configuration ---------------------------------------
-
-const storeName = 'My-Store';
-const desktopLayout ='wid='
-const mobileLayout  ='wid='
-const vtex = '../app/dist';
-const folders = '{desktop,mobile,shared}';
-const scriptsWatch = `../app/src/${folders}/js/**/*.js`;
-const scripts = `../app/src/${folders}/js/*.js`;
-const styles = `../app/src/${folders}/sass/**/*.scss`;
-const sprites = '../app/assets/sprites/**/*.png';
-const vuefiles = `../app/src/${folders}/vue/modules/components vue/*.vue`;
-const vuescripts = `../app/src/${folders}/vue/*.js`;
-const vueScriptsWatch = `../app/src/${folders}/vue/**/*.js`;
-const vueFilesWatch = `../app/src/${folders}/vue/**/*.vue`;
+import {
+storeName      ,
+desktopLayout  ,
+mobileLayout   ,
+vtex           ,
+pugFiles       ,
+pugWatch       ,
+scriptsWatch   ,
+scripts        ,
+styles         ,
+sprites        ,
+vuefiles       ,
+vuescripts     ,
+vueScriptsWatch,
+vueFilesWatch  ,
+} from './config';
 
 // ------------------------------------- Modules -------------------------------------------
 
-const gulp          = require('gulp');
-const sass          = require('gulp-sass');
-const autoprefixer  = require('autoprefixer');
-const postcss       = require('gulp-postcss');
-const cssnano       = require('cssnano');
-const uglify        = require('gulp-uglify');
-const browserify    = require('browserify');
-const babelify      = require('babelify');
-const source        = require('vinyl-source-stream');
-const buffer        = require('vinyl-buffer');
-const glob          = require('glob');
-const stream        = require('event-stream');
-const del           = require('del');
-const browserSync   = require("browser-sync").create();
-const spritesmith   = require('gulp.spritesmith');
-const vueComponent  = require('gulp-vue-single-file-component');
-const rename        = require('gulp-rename');
+const gulp              = require('gulp');
+const pug               = require('gulp-pug');
+const sass              = require('gulp-sass');
+const autoprefixer      = require('autoprefixer');
+const postcss           = require('gulp-postcss');
+const cssnano           = require('cssnano');
+const uglify            = require('gulp-uglify');
+const browserify        = require('browserify');
+const babelify          = require('babelify');
+const source            = require('vinyl-source-stream');
+const buffer            = require('vinyl-buffer');
+const glob              = require('glob');
+const stream            = require('event-stream');
+const del               = require('del');
+const browserSync       = require("browser-sync").create();
+const spritesmith       = require('gulp.spritesmith');
+const vueComponent      = require('gulp-vue-single-file-component');
+const rename            = require('gulp-rename');
 // ------------------------------------ Development ---------------------------------------
 
 function syncDesk() {
@@ -83,6 +84,15 @@ function sync() {
     })
 }
 
+
+function html() {
+    return gulp.src(pugFiles)
+        .pipe(pug({
+            pretty: true,
+        }))
+        .pipe(gulp.dest(vtex));
+}
+
 function sprite() {
     return gulp.src(sprites)
         .pipe(spritesmith({
@@ -120,6 +130,7 @@ function babel(done) {
 
 function watch() {
     gulp.watch(styles, scss);
+    gulp.watch(pugWatch, html);
     gulp.watch(scriptsWatch, babel).on('change', browserSync.reload);
 }
 // ------------------------------------- Production ---------------------------------------
@@ -220,8 +231,8 @@ function vueJs(done) {
     });
 };
 
-
 function vueWatch() {
+    gulp.watch(pugWatch, html);
     gulp.watch(styles, scss);
     gulp.watch(vueScriptsWatch, vueBabel).on('change', browserSync.reload);
     gulp.watch(vueFilesWatch, vueify)
@@ -229,22 +240,22 @@ function vueWatch() {
 
 // ------------------------------------- Tasks ---------------------------------------
 
-const devDesk = gulp.series(clean, gulp.parallel(syncDesk, scss, babel, watch));
+const devDesk = gulp.series(clean, gulp.parallel(syncDesk,html, scss, babel, watch));
 exports.desk = devDesk;
 
-const devMobile = gulp.series(clean, gulp.parallel(syncMobile, scss, babel, watch));
+const devMobile = gulp.series(clean, gulp.parallel(syncMobile, html,scss, babel, watch));
 exports.mobile = devMobile;
 
-const dev = gulp.series(clean, gulp.parallel(sync, scss, babel, watch));
+const dev = gulp.series(clean, gulp.parallel(sync, html,scss, babel, watch));
 exports.watch = dev;
 
-const vueDev = gulp.series(clean,vueify,gulp.parallel(sync, scss, vueBabel , vueWatch));
+const vueDev = gulp.series(clean,vueify,gulp.parallel(sync, html,scss, vueBabel , vueWatch));
 exports.vue = vueDev;
 
-const prod = gulp.series(clean, gulp.parallel(css, js));
+const prod = gulp.series(clean, gulp.parallel(html,css, js));
 exports.default = prod;
 
-const vueProd = gulp.series(clean,vueify,gulp.parallel(css,vueJs));
+const vueProd = gulp.series(clean,vueify,gulp.parallel(html,css,vueJs));
 exports.vueBuild = vueProd;
 
 const smith = gulp.series(clean, gulp.parallel(sprite));

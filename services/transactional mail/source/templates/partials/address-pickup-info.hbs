@@ -1,0 +1,9 @@
+{{#each items.0.slas}}
+  {{#compare ../items.0.selectedSla '==' id}}
+    <strong>{{pickupStoreInfo.friendlyName}}</strong>
+    {{#with pickupStoreInfo.address}}
+      <br />{{street}}, {{number}}{{#if complement}}, {{complement}}{{/if}}
+      <br />{{neighborhood}}
+    {{/with}}
+  {{/compare}}
+{{/each}}

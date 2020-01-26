@@ -1,0 +1,26 @@
+- var $storeName = 'Perfumaria'
+- var $templateName = ''
+- var $templateClass = ''
+block vars
+
+
+doctype
+html(xmlns="http://www.w3.org/1999/xhtml" xmlns:vtex="http://www.vtex.com.br/2009/vtex-common" xmlns:vtex.cmc="http://www.vtex.com.br/2009/vtex-commerce" lang="pt-BR")
+    head
+        include ./../sub templates/_Perfumaria-Head.pug
+    
+        block styles
+            include ./../sub templates/_Perfumaria-Styles.pug
+
+    body
+        block header
+            include ./../sub templates/_Perfumaria-Header.pug
+
+        main(role='main', class='content')
+            block content
+
+        block footer
+            include ./../sub templates/_Perfumaria-Footer.pug
+
+        block scripts
+            include ./../sub templates/_Perfumaria-Scripts.pug

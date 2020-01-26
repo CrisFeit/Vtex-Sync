@@ -1,6 +1,6 @@
 {
   "name": "vtex-sync",
-  "version": "3.0.0",
+  "version": "2.5.3",
   "description": "Comand Lines for run the app",
   "scripts": {
     "dev": "npm run dev --prefix config",
